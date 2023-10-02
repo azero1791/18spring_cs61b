@@ -106,6 +106,8 @@ public class IntList {
             ans = new IntList(B.first, catenate(A, B.rest));
         } else if (A != null && B != null) {
             ans = new IntList(A.first, catenate(A.rest, B));
+        } else if (A != null && B == null) {
+            ans = new IntList(A.first, catenate(A.rest, B));
         }
         return ans;
     }
