@@ -39,7 +39,7 @@ public class NBody {
         /** set the scale of the universe pictrue and complement the background picture */
         StdDraw.setScale(-radius, radius);
         
-        int numPlanet = planets.length();
+        int numPlanet = planets.length;
         double t = 0;
         while (t < T) {
             double[] xForce = new double[numPlanet];
