@@ -1,18 +1,19 @@
-public class ArrayDeque<Item> {
-    private Item[] items;
+public class ArrayDeque<T> {
+
+    private T[] items;
     private int size;
     private int nextFirst;
     private int nextLast;
 
     public ArrayDeque() {
-        items = (Item[]) new Object[16];
+        items = (T[]) new Object[16];
         nextFirst = 1;
         nextLast = 2;
         size = 0;
     }
 
     private void resize(int capacity) {
-        Item[] newItems = (Item[]) new Object[capacity];
+        T[] newItems = (T[]) new Object[capacity];
         int firstSize = size - 1 - nextFirst;
         System.arraycopy(items, nextFirst + 1, newItems, 0, firstSize);
         int lastSize = size - firstSize;
@@ -21,7 +22,7 @@ public class ArrayDeque<Item> {
     }
 
     /** add first item to this deque */
-    public void addFirst(Item item) {
+    public void addFirst(T item) {
         if (size == items.length) {
             resize(size * 2);
         }
@@ -34,7 +35,7 @@ public class ArrayDeque<Item> {
     }
 
     /** add last item to this deque*/
-    public void addLast(Item item) {
+    public void addLast(T item) {
         if (size == items.length) {
             resize(size * 2);
         }
@@ -67,23 +68,23 @@ public class ArrayDeque<Item> {
     }
 
     /** remove first item of this arrayDeque */
-    public Item removeFirst() {
+    public T removeFirst() {
         nextFirst += 1;
-        Item first = items[nextFirst];
+        T first = items[nextFirst];
         size -= 1;
         return first;
     }
 
     /** remove last item of this items */
-    public Item removeLast() {
+    public T removeLast() {
         nextLast -= 1;
-        Item last = items[nextLast];
+        T last = items[nextLast];
         size -= 1;
         return last;
     }
 
     /** return ith item of this arrayDeque */
-    public Item get(int i) {
+    public T get(int i) {
         if (i >= size) {
             return null;
         }

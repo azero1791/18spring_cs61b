@@ -1,10 +1,11 @@
-public class LinkedListDeque<Item> {
-    private class Node {
-        public Item item;
-        public Node pre;
-        public Node next;
+public class LinkedListDeque<T> {
 
-        public Node(Item item, Node pre, Node next) {
+    private class Node {
+        private T item;
+        private Node pre;
+        private Node next;
+
+        public Node(T item, Node pre, Node next) {
             this.item = item;
             this.pre = pre;
             this.next = next;
@@ -15,21 +16,23 @@ public class LinkedListDeque<Item> {
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new Node(null, null,null);
+        sentinel = new Node(null, null, null);
         sentinel.pre = sentinel;
         sentinel.next = sentinel;
         size = 0;
     }
 
     /** add item to the first position of this deque */
-    public void addFirst(Item item) {
+    public void addFirst(T item) {
        sentinel.next = new Node(item, sentinel, sentinel.next);
+       sentinel.next.next.pre = sentinel.next.next;
        size += 1;
     }
 
     /** add item to the last position of this deque*/
-    public void addLast(Item item) {
+    public void addLast(T item) {
         sentinel.pre = new Node(item, sentinel.pre, sentinel);
+        sentinel.pre.pre.next = sentinel.pre;
         size += 1;
     }
 
@@ -54,23 +57,25 @@ public class LinkedListDeque<Item> {
     }
 
     /** remove the first item of this deque */
-    public Item removeFirst() {
-        Item first = sentinel.next.item;
+    public T removeFirst() {
+        T first = sentinel.next.item;
         sentinel.next = sentinel.next.next;
+        sentinel.next.pre = sentinel;
         size -= 1;
         return first;
     }
 
     /** remove the last item of this deque */
-    public Item removeLast() {
-        Item last = sentinel.pre.item;
+    public T removeLast() {
+        T last = sentinel.pre.item;
         sentinel.pre = sentinel.pre.pre;
+        sentinel.pre.next = sentinel;
         size -= 1;
         return last;
     }
 
     /** return ith item of this deque if i < size else return last item*/
-    public Item get(int i) {
+    public T get(int i) {
         if (i >= size) {
             return null;
         }
@@ -84,7 +89,7 @@ public class LinkedListDeque<Item> {
     }
 
     /** getHelper function for recursion */
-    private Item getHelper(Node curNode, int i) {
+    private T getHelper(Node curNode, int i) {
         if (i >= size) {
             return null;
         }
@@ -95,7 +100,7 @@ public class LinkedListDeque<Item> {
         }
     }
     /** get using recursion */
-    public Item getRecursive(int i) {
+    public T getRecursive(int i) {
         return getHelper(sentinel.next, i);
     }
 }
