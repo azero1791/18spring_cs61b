@@ -24,9 +24,9 @@ public class LinkedListDeque<T> {
 
     /** add item to the first position of this deque */
     public void addFirst(T item) {
-       sentinel.next = new Node(item, sentinel, sentinel.next);
-       sentinel.next.next.pre = sentinel.next.next;
-       size += 1;
+        sentinel.next = new Node(item, sentinel, sentinel.next);
+        sentinel.next.next.pre = sentinel.next;
+        size += 1;
     }
 
     /** add item to the last position of this deque*/
@@ -103,4 +103,5 @@ public class LinkedListDeque<T> {
     public T getRecursive(int i) {
         return getHelper(sentinel.next, i);
     }
+
 }

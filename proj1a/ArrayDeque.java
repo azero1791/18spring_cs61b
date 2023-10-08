@@ -1,3 +1,4 @@
+
 public class ArrayDeque<T> {
 
     private T[] items;
@@ -69,6 +70,9 @@ public class ArrayDeque<T> {
 
     /** remove first item of this arrayDeque */
     public T removeFirst() {
+        if (nextFirst >= items.length) {
+            nextFirst = 0;
+        }
         nextFirst += 1;
         T first = items[nextFirst];
         size -= 1;
@@ -77,6 +81,9 @@ public class ArrayDeque<T> {
 
     /** remove last item of this items */
     public T removeLast() {
+        if (nextLast < 0) {
+            nextLast = items.length - 1;
+        }
         nextLast -= 1;
         T last = items[nextLast];
         size -= 1;
@@ -95,7 +102,5 @@ public class ArrayDeque<T> {
 
         return items[curIndex];
     }
-
-
 
 }
