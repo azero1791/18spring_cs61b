@@ -1,4 +1,3 @@
-
 public class ArrayDeque<T> {
 
     private T[] items;
@@ -19,17 +18,16 @@ public class ArrayDeque<T> {
         T[] newItems = (T[]) new Object[capacity];
         int newCurIndex = 0;
         for (int i = nextFirst + 1; i < items.length; i++) {
-            if (i == nextLast) {
+            if (i + 1 == nextLast) {
+                newItems[newCurIndex++] = items[i];
                 resizeOver = true;
                 break;
             }
             newItems[newCurIndex++] = items[i];
         }
         if (!resizeOver) {
-            int leftSize = size - newCurIndex;
-            System.arraycopy(items, 0, newItems, newCurIndex, leftSize);
+            System.arraycopy(items, 0, newItems, newCurIndex, nextLast);
         }
-
         items = newItems;
         nextFirst = items.length - 1;
         nextLast = size;
