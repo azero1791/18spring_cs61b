@@ -20,6 +20,8 @@ public class ArrayDeque<T> {
         int lastSize = size - firstSize;
         System.arraycopy(items, 0, newItems, firstSize, lastSize);
         items = newItems;
+        nextFirst = items.length - 1;
+        nextLast = size;
     }
 
     /** add first item to this deque */
@@ -101,6 +103,9 @@ public class ArrayDeque<T> {
 
     /** return ith item of this arrayDeque */
     public T get(int i) {
+        if (size == 0) {
+            return null;
+        }
         if (i >= size) {
             return null;
         }
