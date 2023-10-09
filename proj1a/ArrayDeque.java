@@ -8,14 +8,14 @@ public class ArrayDeque<T> {
 
     public ArrayDeque() {
         items = (T[]) new Object[16];
-        nextFirst = 1;
-        nextLast = 2;
+        nextFirst = 0;
+        nextLast = 1;
         size = 0;
     }
 
     private void resize(int capacity) {
         T[] newItems = (T[]) new Object[capacity];
-        int firstSize = size - 1 - nextFirst;
+        int firstSize = (size - 1) - (nextFirst + 1) + 1;
         System.arraycopy(items, nextFirst + 1, newItems, 0, firstSize);
         int lastSize = size - firstSize;
         System.arraycopy(items, 0, newItems, firstSize, lastSize);
@@ -60,6 +60,9 @@ public class ArrayDeque<T> {
 
     /** print this arrayDeque whose items are separated by space */
     public void printDeque() {
+        if (size == 0) {
+            return;
+        }
         for (int i = nextFirst; i < items.length; i++) {
             System.out.print(items[i] + " ");
         }
@@ -70,8 +73,11 @@ public class ArrayDeque<T> {
 
     /** remove first item of this arrayDeque */
     public T removeFirst() {
-        if (nextFirst >= items.length) {
-            nextFirst = 0;
+        if (size == 0) {
+            return null;
+        }
+        if (nextFirst == items.length - 1) {
+            nextFirst = -1;
         }
         nextFirst += 1;
         T first = items[nextFirst];
@@ -81,8 +87,11 @@ public class ArrayDeque<T> {
 
     /** remove last item of this items */
     public T removeLast() {
-        if (nextLast < 0) {
-            nextLast = items.length - 1;
+        if (size == 0) {
+            return null;
+        }
+        if (nextLast == 0) {
+            nextLast = items.length;
         }
         nextLast -= 1;
         T last = items[nextLast];
