@@ -81,6 +81,22 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         return rb[first];
     }
 
+    /**
+     * return whether the buffer is empty
+     * @return
+     */
+    public boolean isEmpty() {
+        return fillCount() == 0;
+    }
+
+    /**
+     * return whether the buffer is full
+     * @return
+     */
+    public boolean isFull() {
+        return capacity() == fillCount();
+    }
+
     // TODO: When you get to part 5, implement the needed code to support iteration.
     public Iterator<T> iterator() {
         return new KeyIterator();
