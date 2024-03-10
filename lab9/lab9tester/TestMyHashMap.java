@@ -2,8 +2,12 @@ package lab9tester;
 
 import static org.junit.Assert.*;
 
+import lab9.BSTMap;
 import org.junit.Test;
 import lab9.MyHashMap;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Tests by Brendan Hu, Spring 2015, revised for 2018 by Josh Hug
@@ -125,6 +129,52 @@ public class TestMyHashMap {
         studentIDs.put("evil alan", 345);
         assertEquals(345, studentIDs.get("evil alan").intValue());
         assertEquals(studentIDs.get("evil alan"), studentIDs.get("alan"));
+    }
+
+    @Test
+    public void sanityKeySet() {
+        MyHashMap<String, Integer> b = new MyHashMap<>();
+        Set<String> expectKeys = new HashSet<>();
+
+        assertTrue(b.keySet().equals(expectKeys));
+
+        for (int i = 0; i < 100; i++) {
+            b.put("Hello" + i, i);
+            expectKeys.add("Hello" + i);
+        }
+
+        assertTrue(b.keySet().equals(expectKeys));
+    }
+
+    @Test
+    public void sanityRemoveKey() {
+        MyHashMap<String, Integer> b = new MyHashMap<String, Integer>();
+        assertEquals(null, b.remove("123"));
+        for (int i = 0; i < 10; i++) {
+            b.put("huhuhu" + i, i);
+        }
+
+        for (int i = 1; i < 10; i+=2) {
+            Integer expect = i;
+            assertEquals(expect, b.remove("huhuhu" + i));
+        }
+    }
+
+    @Test
+    public void sanityRemoveKeyValue() {
+        MyHashMap<String, Integer> b = new MyHashMap<String, Integer>();
+        assertEquals(null, b.remove("123", 123));
+
+        for (int i = 0; i < 2000; i++) {
+            b.put("" + i, i);
+        }
+
+        for (int i = 1; i < 200; i += 2) {
+            Integer expect = i;
+            assertEquals(expect, b.remove("" + i, i));
+        }
+
+
     }
 
     public static void main(String[] args) {

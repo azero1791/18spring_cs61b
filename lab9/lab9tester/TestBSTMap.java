@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import lab9.BSTMap;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Tests by Brendan Hu, Spring 2015, revised for 2018 by Josh Hug
@@ -84,6 +86,52 @@ public class TestBSTMap {
         b.put("hi", 1);
         assertTrue(b.containsKey("hi"));
         assertTrue(b.get("hi") != null);
+    }
+
+    @Test
+    public void sanityKeySet() {
+        BSTMap<String, Integer> b = new BSTMap<>();
+        Set<String> expectKeys = new HashSet<>();
+
+        assertTrue(b.keySet().equals(expectKeys));
+
+        for (int i = 0; i < 100; i++) {
+            b.put("Hello" + i, i);
+            expectKeys.add("Hello" + i);
+        }
+
+        assertTrue(b.keySet().equals(expectKeys));
+    }
+
+    @Test
+    public void sanityRemoveKey() {
+        BSTMap<String, Integer> b = new BSTMap<String, Integer>();
+        assertEquals(null, b.remove("123"));
+        for (int i = 0; i < 10; i++) {
+            b.put("huhuhu" + i, i);
+        }
+
+        for (int i = 1; i < 10; i+=2) {
+            Integer expect = i;
+            assertEquals(expect, b.remove("huhuhu" + i));
+        }
+    }
+
+    @Test
+    public void sanityRemoveKeyValue() {
+        BSTMap<String, Integer> b = new BSTMap<String, Integer>();
+        assertEquals(null, b.remove("123", 123));
+
+        for (int i = 0; i < 2000; i++) {
+            b.put("" + i, i);
+        }
+
+        for (int i = 1; i < 200; i += 2) {
+            Integer expect = i;
+            assertEquals(expect, b.remove("" + i, i));
+        }
+
+
     }
 
     public static void main(String[] args) {
