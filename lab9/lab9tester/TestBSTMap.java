@@ -63,6 +63,7 @@ public class TestBSTMap {
         b.put("KISS", 5);
         assertTrue(((Integer) b.get("KISS")).equals(5));
         assertNotEquals(null, b.get("starChild"));
+        assertEquals(null, b.get("qawfasdw"));
         assertEquals(2, b.size());
     }
 
@@ -129,6 +130,7 @@ public class TestBSTMap {
         for (int i = 1; i < 200; i += 2) {
             Integer expect = i;
             assertEquals(expect, b.remove("" + i, i));
+
         }
 
 
