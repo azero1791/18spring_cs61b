@@ -11,8 +11,9 @@ public class TestPercolation {
         Percolation p = new Percolation(10);
 
         for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++)
+            for (int j = 0; j < 10; j++) {
                 assertFalse(p.isOpen(i, j));
+            }
         }
 
     }
@@ -93,10 +94,14 @@ public class TestPercolation {
         Percolation p = new Percolation(10);
         for (int i = 0; i < 10; i++) {
 
-            /** button is connected to a specific site **/
+            /**
+             * button is connected to a specific site
+             */
             assertTrue(p.isConnected(9, i, 9, 11));
 
-            /** top is connected to a specific site**/
+            /**
+             * top is connected to a specific site
+             */
             assertTrue(p.isConnected(0, i, 9, 10));
 
         }

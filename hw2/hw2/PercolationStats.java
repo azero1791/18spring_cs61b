@@ -4,9 +4,9 @@ import edu.princeton.cs.introcs.StdRandom;
 
 public class PercolationStats {
 
-    Percolation p;
-    double[] stats;
-    int length;
+    private Percolation p;
+    private final double[] stats;
+    private final int length;
 
     public PercolationStats(int N, int T, PercolationFactory pf) {
         if (N <= 0) {
@@ -47,15 +47,15 @@ public class PercolationStats {
         for (double stat : stats) {
             sum += (stat - m) * (stat - m);
         }
-        return sum / (stats.length - 1);
+        return Math.sqrt(sum / (stats.length - 1));
     }
 
     public double confidenceLow() {
-        return mean() - 1.96 / Math.sqrt(stddev() / stats.length);
+        return mean() - 1.96 * stddev() / Math.sqrt(stats.length);
     }
 
     public double confidenceHigh() {
-        return mean() + 1.96 / Math.sqrt(stddev() / stats.length);
+        return mean() + 1.96 * stddev() / Math.sqrt(stats.length);
     }
 
 

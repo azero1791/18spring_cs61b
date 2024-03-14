@@ -1,8 +1,6 @@
 package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class Percolation {
 
@@ -154,6 +152,9 @@ public class Percolation {
 
     /** does the system percolate **/
     public boolean percolates() {
+        if (length == 1 || length == 2) {
+            return grid.connected(top, button);
+        }
         return grid.connected(top, button);
     }
 
