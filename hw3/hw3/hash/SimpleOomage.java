@@ -35,7 +35,8 @@ public class SimpleOomage implements Oomage {
         } else {
             // TODO: Write a perfect hash function for Simple Oomages.
 
-            return (int) (red * Math.pow(2, 16) / 5 + blue * Math.pow(2, 8) / 5 + green * Math.pow(2, 0) / 5);
+            return (int) (red * Math.pow(2, 16) / 5 + blue * Math.pow(2, 8) / 5
+                    + green * Math.pow(2, 0) / 5);
         }
     }
 

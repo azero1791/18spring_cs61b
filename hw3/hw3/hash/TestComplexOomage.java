@@ -44,7 +44,7 @@ public class TestComplexOomage {
 
         // Your code here.
         int times = StdRandom.uniform(1000, 2000);
-        for (int i = 0; i < times ; i++) {
+        for (int i = 0; i < times; i++) {
             List<Integer> deadlyPara = new ArrayList<Integer>();
             int extraNumPara = StdRandom.uniform(10);
 
