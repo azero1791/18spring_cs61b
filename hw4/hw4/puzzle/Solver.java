@@ -11,7 +11,6 @@ public class Solver {
         private int moves;
         private SearchNode pre;
 
-
         public SearchNode(WorldState state, int moves, SearchNode pre) {
             this.state = state;
             this.moves = moves;
@@ -19,19 +18,15 @@ public class Solver {
         }
     }
 
-    private class PComparator implements Comparator<SearchNode> {
-        @Override
-        public int compare(SearchNode node1, SearchNode node2) {
-            return (node1.moves + node1.state.estimatedDistanceToGoal()) - (node2.moves + node2.state.estimatedDistanceToGoal());
-        }
-    }
+
     private Queue<WorldState> BMS;
     private MinPQ<SearchNode> candidates;
     private SearchNode s;
     private int minMoves;
 
     private boolean find;
-    private int timesEq;
+
+    private int marked;
 
     /**
      * solve the puzzles directly
@@ -44,49 +39,36 @@ public class Solver {
         minMoves = Integer.MAX_VALUE;
         find = false;
 
-        timesEq = 0;
-        timesEq = 1;
         candidates.insert(s);
         BEFS();
     }
 
-    /**
-     * get the number of times enqueued
-     */
-
-    public int getTimesEq() {
-        return timesEq;
+    private class PComparator implements Comparator<SearchNode> {
+        @Override
+        public int compare(SearchNode node1, SearchNode node2) {
+            return (node1.moves + node1.state.estimatedDistanceToGoal()) - (node2.moves + node2.state.estimatedDistanceToGoal());
+        }
     }
+
     /**
      * using best first search to get the fast and correct path
      */
-    public void BEFS() {
-        if (candidates.isEmpty()) {
-            return ;
-        }
-        if (find) {
-            return ;
-        }
 
-        SearchNode cur = candidates.delMin();
-        BMS.enqueue(cur.state);
+    private void BEFS() {
 
-        if (cur.state.isGoal()) {
+        while (!candidates.isEmpty()) {
+            SearchNode curBest = candidates.delMin();
+            BMS.enqueue(curBest.state);
 
-            minMoves = cur.moves;
-            find = true;
-            return;
-        }
-
-        for (WorldState neighbor : cur.state.neighbors()) {
-            SearchNode neighborNode = new SearchNode(neighbor, cur.moves + 1, cur);
-
-            if (!isGrandparent(neighborNode, cur)) {
-                timesEq += 1;
-                candidates.insert(neighborNode);
+            if (curBest.state.isGoal()) {
+                minMoves = curBest.moves;
+                return;
+            }   else {
+                for (WorldState neighborState : curBest.state.neighbors()) {
+                    candidates.insert(new SearchNode(neighborState, curBest.moves + 1, curBest));
+                }
             }
         }
-        BEFS();
     }
 
     /**

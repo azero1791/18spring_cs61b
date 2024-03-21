@@ -1,8 +1,8 @@
 package hw4.puzzle;
 
 import edu.princeton.cs.algs4.Queue;
-import java.lang.IndexOutOfBoundsException;
-public class Board implements WorldState{
+
+public class Board implements WorldState {
     private final int BLANK = 0;
     private final int[][] cur;
     private final int[][] goal;
@@ -25,7 +25,7 @@ public class Board implements WorldState{
         }
     }
 
-    public int[][] getTiles() {
+    private int[][] getTiles() {
         return cur;
     }
 
@@ -92,7 +92,7 @@ public class Board implements WorldState{
         int count = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-                if (cur[row][col] != goal[row][col]) {
+                if (cur[row][col] != goal[row][col] && cur[row][col] != BLANK) {
                     count += 1;
                 }
             }
@@ -103,7 +103,7 @@ public class Board implements WorldState{
     /**
      * calculate single manhattan distance between some position
      */
-    public int singleManhatton(int curRow, int curCol, int goalRow, int goalCol) {
+    private int singleManhatton(int curRow, int curCol, int goalRow, int goalCol) {
         return Math.abs(curRow - goalRow) + Math.abs(curCol - goalCol);
     }
 
@@ -115,7 +115,7 @@ public class Board implements WorldState{
         int count = 0;
         int curRow = 0, curCol = 0;
         int goalRow = 0, goalCol = 0;
-        for (int number = 0; number < size * size; number++) {
+        for (int number = 1; number < size * size; number++) {
             for (int row = 0; row < size; row++) {
                 for (int col = 0; col < size; col++) {
 
@@ -145,6 +145,11 @@ public class Board implements WorldState{
         return manhattan();
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * determine whether contents of two board are the same
      */
@@ -155,8 +160,11 @@ public class Board implements WorldState{
         if (!y.getClass().equals(this.getClass())) {
             return false;
         }
-        y = (Board) y;
-        int[][] tiles = ((Board) y).getTiles();
+        Board target = (Board) y;
+        if (target.size() != size) {
+
+        }
+        int[][] tiles = target.getTiles();
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 if (cur[row][col] != tiles[row][col]) {
