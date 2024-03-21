@@ -48,12 +48,52 @@ public class QuickSort {
             Queue<Item> unsorted, Item pivot,
             Queue<Item> less, Queue<Item> equal, Queue<Item> greater) {
         // Your code here!
+        for (Item item : unsorted) {
+            if (item.compareTo(pivot) < 0) {
+                less.enqueue(item);
+            }   else if (item.compareTo(pivot) == 0) {
+                equal.enqueue(item);
+            }   else {
+                greater.enqueue(item);
+            }
+
+        }
+
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> quickSort(
             Queue<Item> items) {
+
+        if (items.size() == 1 || items.size() == 0) {
+            return items;
+        }
+
         // Your code here!
-        return items;
+        Item pivot = getRandomItem(items);
+        Queue<Item> less = new Queue<Item>();
+        Queue<Item> equal = new Queue<Item>();
+        Queue<Item> greater = new Queue<Item>();
+
+        partition(items, pivot, less, equal, greater);
+        less = quickSort(less);
+        greater = quickSort(greater);
+        Queue<Item> answer = catenate(less, equal);
+        answer = catenate(answer, greater);
+
+        return answer;
+    }
+
+    public static void main(String[] args) {
+        Queue<String> test = new Queue<>();
+
+        test.enqueue("afwa");
+        test.enqueue("twawfw");
+        test.enqueue("feaffw");
+
+        System.out.println("The original unsorted queue is: " + test);
+        Queue<String> answer = QuickSort.quickSort(test);
+        System.out.println("After quickSort, The original queue is: " + test);
+        System.out.println("After quickSort, The answer queue is: " + answer);
     }
 }

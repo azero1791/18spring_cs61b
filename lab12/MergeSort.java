@@ -35,7 +35,18 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
         // Your code here!
-        return null;
+
+        if (items.isEmpty()) {
+            return null;
+        }
+
+        Queue<Queue<Item>> answer = new Queue<Queue<Item>>();
+        for (Item item : items) {
+            Queue<Item> queueItem = new Queue<>();
+            queueItem.enqueue(item);
+            answer.enqueue(queueItem);
+        }
+        return answer;
     }
 
     /**
@@ -54,13 +65,50 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> answer = new Queue<Item>();
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            answer.enqueue(getMin(q1, q2));
+        }
+
+        while (!q1.isEmpty()) {
+            answer.enqueue(q1.dequeue());
+        }
+
+        while (!q2.isEmpty()) {
+            answer.enqueue(q2.dequeue());
+        }
+
+        return answer;
     }
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        if (items == null) {
+            return null;
+        }
+
+        Queue<Queue<Item>> answer = makeSingleItemQueues(items);
+
+        while (answer.size() != 1) {
+            Queue<Item> q1 = answer.dequeue();
+            Queue<Item> q2 = answer.dequeue();
+            answer.enqueue(mergeSortedQueues(q1, q2));
+        }
+        return answer.dequeue();
+    }
+
+    public static void main(String[] args) {
+        Queue<String> test = new Queue<>();
+
+        test.enqueue("afwa");
+        test.enqueue("twawfw");
+        test.enqueue("feaffw");
+
+        System.out.println("The original unsorted queue is: " + test);
+        Queue<String> answer = MergeSort.mergeSort(test);
+        System.out.println("After mergeSort, The original queue is: " + test);
+        System.out.println("After mergeSort, The answer queue is: " + answer);
     }
 }

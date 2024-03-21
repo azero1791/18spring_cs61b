@@ -162,7 +162,7 @@ public class Board implements WorldState {
         }
         Board target = (Board) y;
         if (target.size() != size) {
-
+            return false;
         }
         int[][] tiles = target.getTiles();
         for (int row = 0; row < size; row++) {
