@@ -43,27 +43,36 @@ public class RadixSort {
     /**
      * put corresponding digit string of given array
      */
-    private static void putSingleString(String[] answer, String[] newAsciis, String[] asciis, int charNum, int d, int charLength, int curIndex) {
-        for (int i = 0; i < newAsciis.length; i++) {
-            if (newAsciis[i].charAt(charLength - 1 - d) == charNum) {
-                answer[curIndex++] = asciis[i];
+    private static void putSingleString(String[] answer, String[] preAnswer, String[] alignAnswer, String[] preAlignAnswer, int charNum, int d, int charLength, int curIndex) {
+
+        for (int i = 0; i < preAlignAnswer.length; i++) {
+            if (preAlignAnswer[i].charAt(charLength - 1 - d) == charNum) {
+                answer[curIndex] = preAnswer[i];
+                alignAnswer[curIndex] = preAlignAnswer[i];
+                curIndex++;
             }
         }
     }
     /**
      * stable sort on digit of the given array
      */
-    private static void stableSortOnDigit(String[] answer, String[] newAsciis, String[] asciis, int d, int charLength) {
+    private static void stableSortOnDigit(String[] answer, String[] alignAnswer, int d, int charLength) {
         int curIndex = 0;
         char[] countBucket = new char[257];
-        for (int i = 0; i < newAsciis.length; i++) {
+        for (int i = 0; i < alignAnswer.length; i++) {
             int index = charLength - 1 - d;
-            char c = newAsciis[i].charAt(index);
+            char c = alignAnswer[i].charAt(index);
             countBucket[(int) c]++;
         }
+        String[] preAnswer = new String[answer.length];
+        System.arraycopy(answer, 0, preAnswer, 0, answer.length);
+
+        String[] preAlignAnswer = new String[answer.length];
+        System.arraycopy(alignAnswer, 0, preAlignAnswer, 0, preAnswer.length);
         for (int i = 0; i < countBucket.length; i++) {
             if (countBucket[i] != 0) {
-                putSingleString(answer, newAsciis, asciis, i, d, charLength, curIndex);
+
+                putSingleString(answer, preAnswer, alignAnswer, preAlignAnswer, i, d, charLength, curIndex);
                 curIndex += countBucket[i];
             }
         }
@@ -85,10 +94,11 @@ public class RadixSort {
 
         int longest = findLongest(asciis);
         String[] answer = new String[asciis.length];
-        String[] newAsciis = alignStrings(asciis, longest);
+        System.arraycopy(asciis, 0, answer, 0, asciis.length);
+        String[] alignStrings = alignStrings(asciis, longest);
 
         for (int d = 0; d < longest; d++) {
-            stableSortOnDigit(answer, newAsciis, asciis, d, longest);
+            stableSortOnDigit(answer, alignStrings, d, longest);
         }
         return answer;
     }
