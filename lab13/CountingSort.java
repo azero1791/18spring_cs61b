@@ -118,8 +118,8 @@ public class CountingSort {
 
         int max = Integer.MIN_VALUE;
         for (int num : arr) {
-            if (num > max) {
-                max = num;
+            if (Math.abs(num) > max) {
+                max = Math.abs(num);
             }
         }
         int[] positive = new int[max + 1];
