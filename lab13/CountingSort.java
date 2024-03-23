@@ -58,6 +58,52 @@ public class CountingSort {
     }
 
     /**
+     * set items to 0 of given array
+     */
+    private static void setZero(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = 0;
+        }
+    }
+
+    /**
+     * count numbers of items of given array
+     */
+
+    private static void countNumber(int[] arr, int[] positive, int[] negative) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] >= 0) {
+                positive[arr[i]] += 1;
+            }   else {
+                negative[-arr[i]] += 1;
+            }
+        }
+    }
+
+    /**
+     * put positive array and negative array into the answer array
+     */
+    private static int[] getSorted(int[] positive, int[] negative, int length) {
+        int[] answer = new int[length];
+        int curIndex = 0;
+        for (int i = negative.length - 1; i >= 0; i--) {
+            if (negative[i] != 0) {
+                for (int j = 0; j < negative[i]; j++) {
+                    answer[curIndex++] = -i;
+                }
+            }
+        }
+
+        for (int i = 0; i < positive.length; i++) {
+            if (positive[i] != 0) {
+                for (int j = 0; j < positive[i]; j++) {
+                    answer[curIndex++] = i;
+                }
+            }
+        }
+        return answer;
+    }
+    /**
      * Counting sort on the given int array, must work even with negative numbers.
      * Note, this code does not need to work for ranges of numbers greater
      * than 2 billion.
@@ -67,6 +113,16 @@ public class CountingSort {
      */
     public static int[] betterCountingSort(int[] arr) {
         // TODO make counting sort work with arrays containing negative numbers.
-        return null;
+        final int LENGTH = (int) (2 * Math.pow(10, 8) + 1);
+        int[] positive = new int[LENGTH];
+        int[] negative = new int[LENGTH];
+
+        setZero(positive);
+        setZero(negative);
+
+        countNumber(arr, positive, negative);
+
+        int[] answer = getSorted(positive, negative, arr.length);
+        return answer;
     }
 }

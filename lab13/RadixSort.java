@@ -5,6 +5,71 @@
  *
  */
 public class RadixSort {
+
+    /**
+     * find the longest size of the item of given array
+     */
+    private static int findLongest(String[] asciis) {
+        int longest = Integer.MIN_VALUE;
+        for (int i = 0; i < asciis.length; i++) {
+            if (asciis[i].length() > longest) {
+                longest = asciis[i].length();
+
+            }
+        }
+        return longest;
+    }
+    /**
+     * align each String of given array
+     */
+    private static String[] alignStrings(String[] asciis, int length) {
+        String[] answer = new String[asciis.length];
+        for (int i = 0; i < asciis.length; i++) {
+            if (asciis[i].length() < length) {
+                int comLength = length - asciis[i].length();
+                StringBuffer buffer = new StringBuffer();
+                for (int j = 0; j < comLength; j++) {
+                    buffer.append((char) 1);
+                }
+                answer[i] = asciis[i] + buffer.toString();
+            }   else {
+                answer[i] = asciis[i];
+            }
+
+        }
+        return answer;
+    }
+
+    /**
+     * put corresponding digit string of given array
+     */
+    private static void putSingleString(String[] answer, String[] newAsciis, String[] asciis, int charNum, int d, int charLength, int curIndex) {
+        for (int i = 0; i < newAsciis.length; i++) {
+            if (newAsciis[i].charAt(charLength - 1 - d) == charNum) {
+                answer[curIndex++] = asciis[i];
+            }
+        }
+    }
+    /**
+     * stable sort on digit of the given array
+     */
+    private static void stableSortOnDigit(String[] answer, String[] newAsciis, String[] asciis, int d, int charLength) {
+        int curIndex = 0;
+        char[] countBucket = new char[257];
+        for (int i = 0; i < newAsciis.length; i++) {
+            int index = charLength - 1 - d;
+            char c = newAsciis[i].charAt(index);
+            countBucket[(int) c]++;
+        }
+        for (int i = 0; i < countBucket.length; i++) {
+            if (countBucket[i] != 0) {
+                putSingleString(answer, newAsciis, asciis, i, d, charLength, curIndex);
+                curIndex += countBucket[i];
+            }
+        }
+        return;
+    }
+
     /**
      * Does LSD radix sort on the passed in array with the following restrictions:
      * The array can only have ASCII Strings (sequence of 1 byte characters)
@@ -17,7 +82,15 @@ public class RadixSort {
      */
     public static String[] sort(String[] asciis) {
         // TODO: Implement LSD Sort
-        return null;
+
+        int longest = findLongest(asciis);
+        String[] answer = new String[asciis.length];
+        String[] newAsciis = alignStrings(asciis, longest);
+
+        for (int d = 0; d < longest; d++) {
+            stableSortOnDigit(answer, newAsciis, asciis, d, longest);
+        }
+        return answer;
     }
 
     /**

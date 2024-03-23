@@ -50,6 +50,7 @@ public class CountingSortTester {
     @Test
     public void testBetterWithSomeNegative() {
         int[] sortedSomeNegative = CountingSort.betterCountingSort(someNegative);
+
         assertIsSorted(sortedSomeNegative);
     }
 
