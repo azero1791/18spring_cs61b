@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +23,56 @@ public class Router {
      * @return A list of node id's in the order visited on the shortest path.
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
-                                          double destlon, double destlat) {
-        return null; // FIXME
+                                   double destlon, double destlat) {
+        Set<GraphDB.Node> mark = new HashSet<>();
+        long sId = g.closest(stlon, stlat);
+        long eId = g.closest(destlon, destlat);
+        GraphDB.Node s = g.findNode(sId);
+        GraphDB.Node e = g.findNode(eId);
+        Queue<GraphDB.Node> fringe = new PriorityQueue<>(new GraphDB.PComparator(g, e));
+        Map<Long, Long> edgeTo = new HashMap<>();
+        List<Long> answer = new LinkedList<>();
+        s.changeDisTo(0);
+        fringe.add(s);
+        boolean found = false;
+
+        while (!fringe.isEmpty()) {
+            if (found) {
+                break;
+            }
+            GraphDB.Node cur = fringe.peek();
+            fringe.poll();
+            mark.add(cur);
+            for (long nodeId : g.adjacent(cur.getId())) {
+                GraphDB.Node node = g.findNode(nodeId);
+                if (node.equals(e)) {
+                    found = true;
+                    edgeTo.put(node.getId(), cur.getId());
+                    break;
+                }
+                if (!mark.contains(node)) {
+                    edgeTo.put(node.getId(), cur.getId());
+                    double newDisToNode = cur.getDisTo() + g.distance(cur.getId(), node.getId());
+                    if (node.getDisTo() > newDisToNode) {
+                        node.changeDisTo(newDisToNode);
+                    }
+                    fringe.add(node);
+                }
+            }
+        }
+        long preNodeId = e.getId();
+        answer.add(0, preNodeId);
+        while (preNodeId != s.getId()) {
+            long answerNodeId = edgeTo.get(preNodeId);
+            answer.add(0, answerNodeId);
+            preNodeId = answerNodeId;
+        }
+        for (long nodeId : g.vertices()) {
+            g.findNode(nodeId).changeDisTo(Double.MAX_VALUE);
+        }
+        return answer;
     }
+
 
     /**
      * Create the list of directions corresponding to a route on the graph.
@@ -65,7 +111,7 @@ public class Router {
 
         /** Default name for an unknown way. */
         public static final String UNKNOWN_ROAD = "unknown road";
-        
+
         /** Static initializer. */
         static {
             DIRECTIONS[START] = "Start";

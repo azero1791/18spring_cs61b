@@ -6,7 +6,8 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -20,13 +21,16 @@ import java.util.ArrayList;
 public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
-
+    private Map<Long, Node> nodes;
+    private Set<Way> ways;
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
      * @param dbPath Path to the XML file to be parsed.
      */
     public GraphDB(String dbPath) {
+        nodes = new HashMap<>();
+        ways = new HashSet<>();
         try {
             File inputFile = new File(dbPath);
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -40,6 +44,10 @@ public class GraphDB {
             e.printStackTrace();
         }
         clean();
+    }
+
+    public int numVertices() {
+        return nodes.size();
     }
 
     /**
@@ -58,7 +66,37 @@ public class GraphDB {
      */
     private void clean() {
         // TODO: Your code here.
+        Set<Node> remove = new HashSet<>();
+        for (Node node : nodes.values()) {
+            Set<Long> adj = (Set<Long>) adjacent(node.id);
+            if (adj.isEmpty()) {
+                remove.add(node);
+            }
+        }
+        for (Node node : remove) {
+            removeNode(node);
+        }
     }
+    /**
+     * remove some node from nodes of graph
+     */
+    private void removeNode(Node node) {
+        nodes.remove(node.id);
+    }
+
+    /**
+     * return given id node
+     */
+    public Node findNode(Long id) {
+        return nodes.get(id);
+    }
+    /**
+     * add some node to nodes of graph
+     */
+    public void addVertice(Node node) {
+        nodes.put(node.id, node);
+    }
+
 
     /**
      * Returns an iterable of all vertex IDs in the graph.
@@ -66,7 +104,7 @@ public class GraphDB {
      */
     Iterable<Long> vertices() {
         //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
     /**
@@ -75,7 +113,7 @@ public class GraphDB {
      * @return An iterable of the ids of the neighbors of v.
      */
     Iterable<Long> adjacent(long v) {
-        return null;
+        return nodes.get(v).adjacent;
     }
 
     /**
@@ -136,7 +174,16 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        return 0;
+        double closest = Long.MAX_VALUE;
+        Node closestNode = null;
+        for (Node node : nodes.values()) {
+            double curDistance = distance(node.lon, node.lat, lon, lat);
+            if (curDistance < closest) {
+                closestNode = node;
+                closest = curDistance;
+            }
+        }
+        return closestNode.id;
     }
 
     /**
@@ -145,7 +192,7 @@ public class GraphDB {
      * @return The longitude of the vertex.
      */
     double lon(long v) {
-        return 0;
+        return nodes.get(v).lon;
     }
 
     /**
@@ -154,6 +201,78 @@ public class GraphDB {
      * @return The latitude of the vertex.
      */
     double lat(long v) {
-        return 0;
+        return nodes.get(v).lat;
+    }
+
+    public void addWay(Way way) {
+        ways.add(way);
+    }
+
+    static class Node{
+        private long id;
+        private double lon;
+        private double lat;
+        private String name;
+        private Set<Long> adjacent;
+        private double disTo;
+
+        public Node(String id, String lat, String lon) {
+            this.id = Long.parseLong(id);
+            this.lon = Double.parseDouble(lon);
+            this.lat = Double.parseDouble(lat);
+            disTo = Double.MAX_VALUE;
+            adjacent = new HashSet<>();
+        }
+        public void addName(String name) {
+            this.name = name;
+        }
+        public void addAdjV(Long id) {
+            adjacent.add(id);
+        }
+
+        public long getId() {
+            return id;
+        }
+        public double getDisTo() {
+            return disTo;
+        }
+        public void changeDisTo(double disTo) {
+            this.disTo = disTo;
+        }
+    }
+    public static class Way {
+        private List<Long> adjacentV;
+        private String highway;
+        private String name;
+        public Way() {
+            adjacentV = new ArrayList<>();
+        }
+        public void addAdjV(String id) {
+            adjacentV.add(Long.parseLong(id));
+        }
+
+        public void setHighway(String v) {
+            highway = v;
+        }
+        public void setName(String name) {
+            this.name = name;
+        }
+        public List<Long> adjacentV() {
+            return adjacentV;
+        }
+    }
+    public static class PComparator implements Comparator<Node> {
+        private GraphDB g;
+        private Node e;
+        public PComparator(GraphDB g, Node e) {
+            this.g = g;
+            this.e = e;
+        }
+        @Override
+        public int compare(Node node1, Node node2) {
+            double dis1 = node1.disTo + g.distance(node1.getId(), e.getId());
+            double dis2 = node2.disTo + g.distance(node2.getId(), e.getId());
+            return (int) (dis1 - dis2);
+        }
     }
 }

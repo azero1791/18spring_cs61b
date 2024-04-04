@@ -2,9 +2,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 /**
  *  Parses OSM XML files using an XML SAX parser. Used to construct the graph of roads for
@@ -38,6 +40,9 @@ public class GraphBuildingHandler extends DefaultHandler {
                     "secondary_link", "tertiary_link"));
     private String activeState = "";
     private final GraphDB g;
+    private GraphDB.Node lastNode;
+    private boolean wayValid;
+    private GraphDB.Way lastWay;
 
     /**
      * Create a new GraphBuildingHandler.
@@ -45,6 +50,8 @@ public class GraphBuildingHandler extends DefaultHandler {
      */
     public GraphBuildingHandler(GraphDB g) {
         this.g = g;
+        this.lastNode = null;
+        wayValid = false;
     }
 
     /**
@@ -74,10 +81,15 @@ public class GraphBuildingHandler extends DefaultHandler {
 
             /* TODO Use the above information to save a "node" to somewhere. */
             /* Hint: A graph-like structure would be nice. */
+            GraphDB.Node node = new GraphDB.Node(attributes.getValue("id"), attributes.getValue("lat"), attributes.getValue("lon"));
+            g.addVertice(node);
+            lastNode = node;
 
         } else if (qName.equals("way")) {
             /* We encountered a new <way...> tag. */
             activeState = "way";
+            lastWay = new GraphDB.Way();
+            g.addWay(lastWay);
 //            System.out.println("Beginning a way...");
         } else if (activeState.equals("way") && qName.equals("nd")) {
             /* While looking at a way, we found a <nd...> tag. */
@@ -89,6 +101,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             cumbersome since you might have to remove the connections if you later see a tag that
             makes this way invalid. Instead, think of keeping a list of possible connections and
             remember whether this way is valid or not. */
+            lastWay.addAdjV(attributes.getValue("ref"));
 
         } else if (activeState.equals("way") && qName.equals("tag")) {
             /* While looking at a way, we found a <tag...> tag. */
@@ -97,12 +110,20 @@ public class GraphBuildingHandler extends DefaultHandler {
             if (k.equals("maxspeed")) {
                 //System.out.println("Max Speed: " + v);
                 /* TODO set the max speed of the "current way" here. */
+
             } else if (k.equals("highway")) {
                 //System.out.println("Highway type: " + v);
                 /* TODO Figure out whether this way and its connections are valid. */
                 /* Hint: Setting a "flag" is good enough! */
+                if (ALLOWED_HIGHWAY_TYPES.contains(v)) {
+                    lastWay.setHighway(v);
+                    wayValid = true;
+                }   else {
+                    wayValid = false;
+                }
             } else if (k.equals("name")) {
                 //System.out.println("Way Name: " + v);
+                lastWay.setName(v);
             }
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
@@ -113,6 +134,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
             last node that you looked at (check the first if-case). */
 //            System.out.println("Node's name: " + attributes.getValue("v"));
+            lastNode.addName(attributes.getValue("v"));
         }
     }
 
@@ -129,11 +151,22 @@ public class GraphBuildingHandler extends DefaultHandler {
      */
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (qName.equals("way")) {
+        if (qName.equals("way") && wayValid) {
             /* We are done looking at a way. (We finished looking at the nodes, speeds, etc...)*/
             /* Hint1: If you have stored the possible connections for this way, here's your
             chance to actually connect the nodes together if the way is valid. */
 //            System.out.println("Finishing a way...");
+            List<Long> linerAdjV = lastWay.adjacentV();
+
+            for (int i = 0; i < linerAdjV.size() - 1; ++i) {
+                long preId = linerAdjV.get(i);
+                long curId = linerAdjV.get(i + 1);
+                GraphDB.Node preNode = g.findNode(preId);
+                GraphDB.Node curNode = g.findNode(curId);
+                preNode.addAdjV(curId);
+                curNode.addAdjV(preId);
+            }
+            wayValid = false;
         }
     }
 
