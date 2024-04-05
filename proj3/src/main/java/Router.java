@@ -24,56 +24,59 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                    double destlon, double destlat) {
-        Set<GraphDB.Node> mark = new HashSet<>();
-        long sId = g.closest(stlon, stlat);
-        long eId = g.closest(destlon, destlat);
-        GraphDB.Node s = g.findNode(sId);
-        GraphDB.Node e = g.findNode(eId);
-        Queue<GraphDB.Node> fringe = new PriorityQueue<>(new GraphDB.PComparator(g, e));
-        Map<Long, Long> edgeTo = new HashMap<>();
-        List<Long> answer = new LinkedList<>();
-        s.changeDisTo(0);
-        fringe.add(s);
-        boolean found = false;
+        Set<Long> mark = new HashSet<>();
+        long s = g.closest(stlon, stlat);
+        long e = g.closest(destlon, destlat);
 
-        while (!fringe.isEmpty()) {
+        Queue<Long> fringe = new PriorityQueue<>(g.getLComparator());
+        List<Long> ans = new ArrayList<Long>();
+        g.changeDisTo(s, 0);
+        g.changePriority(s, g.getDisTo(s) + g.distance(s, e));
+        fringe.add(s);
+
+        boolean found = false;
+        Map<Long, Long> edgeTo = new HashMap<Long, Long>();
+        while(!fringe.isEmpty()) {
             if (found) {
                 break;
             }
-            GraphDB.Node cur = fringe.peek();
-            fringe.poll();
+            long cur = fringe.peek();
             mark.add(cur);
-            for (long nodeId : g.adjacent(cur.getId())) {
-                GraphDB.Node node = g.findNode(nodeId);
-                if (node.equals(e)) {
+            fringe.poll();
+
+            for (long node : g.adjacent(cur)) {
+                if (mark.contains(node)) {
+                    continue;
+                }
+                if (node == e) {
                     found = true;
-                    edgeTo.put(node.getId(), cur.getId());
+                    edgeTo.put(e, cur);
                     break;
                 }
-                if (!mark.contains(node)) {
-                    edgeTo.put(node.getId(), cur.getId());
-                    double newDisToNode = cur.getDisTo() + g.distance(cur.getId(), node.getId());
-                    if (node.getDisTo() > newDisToNode) {
-                        node.changeDisTo(newDisToNode);
-                    }
-                    fringe.add(node);
+                Double newDisTo = g.getDisTo(cur) + g.distance(cur, node);
+                if (newDisTo < g.getDisTo(node)) {
+                    g.changeDisTo(node, newDisTo);
                 }
+                g.changePriority(node, g.getDisTo(node) + g.distance(node, e));
+                fringe.add(node);
+                edgeTo.put(node, cur);
             }
         }
-        long preNodeId = e.getId();
-        answer.add(0, preNodeId);
-        while (preNodeId != s.getId()) {
-            long answerNodeId = edgeTo.get(preNodeId);
-            answer.add(0, answerNodeId);
-            preNodeId = answerNodeId;
+
+        long cur = e;
+        ans.add(0, cur);
+        while (cur != s) {
+            cur = edgeTo.get(cur);
+            ans.add(0, cur);
         }
-        for (long nodeId : g.vertices()) {
-            g.findNode(nodeId).changeDisTo(Double.MAX_VALUE);
+
+        for (long node : g.vertices()) {
+            g.changeDisTo(node, Double.MAX_VALUE);
+            g.changePriority(node, Double.MAX_VALUE);
         }
-        return answer;
+
+        return ans;
     }
-
-
     /**
      * Create the list of directions corresponding to a route on the graph.
      * @param g The graph to use.

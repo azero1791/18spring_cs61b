@@ -182,10 +182,10 @@ public class Rasterer {
             }
         }
         if (!ul_x) {
-            ulX = numImgX;
+            ulX = 0;
         }
         if (!ul_y) {
-            ulY = numImgY;
+            ulY = 0;
         }
         if (!lr_x) {
             lrX = numImgX;

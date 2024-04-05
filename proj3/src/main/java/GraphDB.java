@@ -215,6 +215,7 @@ public class GraphDB {
         private String name;
         private Set<Long> adjacent;
         private double disTo;
+        private double priority;
 
         public Node(String id, String lat, String lon) {
             this.id = Long.parseLong(id);
@@ -222,6 +223,7 @@ public class GraphDB {
             this.lat = Double.parseDouble(lat);
             disTo = Double.MAX_VALUE;
             adjacent = new HashSet<>();
+            priority = Double.MAX_VALUE;
         }
         public void addName(String name) {
             this.name = name;
@@ -230,15 +232,6 @@ public class GraphDB {
             adjacent.add(id);
         }
 
-        public long getId() {
-            return id;
-        }
-        public double getDisTo() {
-            return disTo;
-        }
-        public void changeDisTo(double disTo) {
-            this.disTo = disTo;
-        }
     }
     public static class Way {
         private List<Long> adjacentV;
@@ -261,18 +254,35 @@ public class GraphDB {
             return adjacentV;
         }
     }
-    public static class PComparator implements Comparator<Node> {
-        private GraphDB g;
-        private Node e;
-        public PComparator(GraphDB g, Node e) {
-            this.g = g;
-            this.e = e;
-        }
+
+    public Comparator<Node> getPComparator() {
+        return new PComparator();
+    }
+    public class PComparator implements Comparator<Node> {
         @Override
         public int compare(Node node1, Node node2) {
-            double dis1 = node1.disTo + g.distance(node1.getId(), e.getId());
-            double dis2 = node2.disTo + g.distance(node2.getId(), e.getId());
-            return (int) (dis1 - dis2);
+            return (int) (node1.priority - node2.priority);
         }
+    }
+    public class LComparator implements Comparator<Long> {
+        @Override
+        public int compare(Long node1, Long node2) {
+            return Double.compare(nodes.get(node1).priority, nodes.get(node2).priority);
+        }
+    }
+    public Comparator<Long> getLComparator() {
+        return new LComparator();
+    }
+    public double getDisTo(long node) {
+        return nodes.get(node).disTo;
+    }
+    public void changeDisTo(long node, double disTo) {
+        nodes.get(node).disTo = disTo;
+    }
+    public void changePriority(long node, double priority) {
+        nodes.get(node).priority = priority;
+    }
+    public double getPriority(long node) {
+        return nodes.get(node).priority;
     }
 }
