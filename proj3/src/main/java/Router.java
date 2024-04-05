@@ -40,14 +40,10 @@ public class Router {
             if (found) {
                 break;
             }
-            long cur = fringe.peek();
+            long cur = fringe.poll();
             mark.add(cur);
-            fringe.poll();
 
             for (long node : g.adjacent(cur)) {
-                if (mark.contains(node)) {
-                    continue;
-                }
                 if (node == e) {
                     found = true;
                     edgeTo.put(e, cur);
@@ -58,8 +54,10 @@ public class Router {
                     g.changeDisTo(node, newDisTo);
                 }
                 g.changePriority(node, g.getDisTo(node) + g.distance(node, e));
-                fringe.add(node);
-                edgeTo.put(node, cur);
+                if (!mark.contains(node)) {
+                    fringe.add(node);
+                    edgeTo.put(node, cur);
+                }
             }
         }
 
