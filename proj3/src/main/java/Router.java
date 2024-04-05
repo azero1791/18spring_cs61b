@@ -49,7 +49,7 @@ public class Router {
                     edgeTo.put(e, cur);
                     break;
                 }
-                Double newDisTo = g.getDisTo(cur) + g.distance(cur, node);
+                double newDisTo = g.getDisTo(cur) + g.distance(cur, node);
                 if (!mark.contains(node) && newDisTo < g.getDisTo(node)) {
                     g.changeDisTo(node, newDisTo);
                     g.changePriority(node, g.getDisTo(node) + g.distance(node, e));
@@ -62,6 +62,10 @@ public class Router {
         long cur = e;
         ans.add(0, cur);
         while (cur != s) {
+            if (edgeTo.get(e) == null) {
+                ans = new LinkedList<>();
+                break;
+            }
             cur = edgeTo.get(cur);
             ans.add(0, cur);
         }
