@@ -50,11 +50,9 @@ public class Router {
                     break;
                 }
                 Double newDisTo = g.getDisTo(cur) + g.distance(cur, node);
-                if (newDisTo < g.getDisTo(node)) {
+                if (!mark.contains(node) && newDisTo < g.getDisTo(node)) {
                     g.changeDisTo(node, newDisTo);
-                }
-                g.changePriority(node, g.getDisTo(node) + g.distance(node, e));
-                if (!mark.contains(node)) {
+                    g.changePriority(node, g.getDisTo(node) + g.distance(node, e));
                     fringe.add(node);
                     edgeTo.put(node, cur);
                 }
@@ -70,7 +68,7 @@ public class Router {
 
         for (long node : g.vertices()) {
             g.changeDisTo(node, Double.MAX_VALUE);
-            g.changePriority(node, Double.MAX_VALUE);
+            g.changePriority(node, 0);
         }
 
         return ans;
