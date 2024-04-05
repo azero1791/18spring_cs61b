@@ -43,11 +43,6 @@ public class TestRouter {
 
             assertEquals("Your results did not match the expected results", expected, actual);
         }
-        double end_lat=37.86478830878986, start_lon=-122.26569077969741, start_lat=37.87875359186967, end_lon=-122.27005764796877;
-        List<Long> actual = Router.shortestPath(graph, start_lon, start_lat, end_lon, end_lat);
-        for (Long id : actual) {
-            System.out.println(id);
-        }
     }
 
     private List<Map<String, Double>> paramsFromFile() throws Exception {

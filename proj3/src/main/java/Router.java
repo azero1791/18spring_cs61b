@@ -72,7 +72,7 @@ public class Router {
 
         for (long node : g.vertices()) {
             g.changeDisTo(node, Double.MAX_VALUE);
-            g.changePriority(node, 0);
+            g.changePriority(node, Double.MAX_VALUE);
         }
 
         return ans;
